@@ -19,5 +19,5 @@ python inference.py --image_path=image_path
 ```
 Results:
 <p align="center">
-  <img width="500" height="300" src="https://user-images.githubusercontent.com/48142689/92224160-a0193600-eecb-11ea-9243-82d02d86812a.png">
+  <img width="600" height="300" src="https://user-images.githubusercontent.com/48142689/92224160-a0193600-eecb-11ea-9243-82d02d86812a.png">
 </p>
