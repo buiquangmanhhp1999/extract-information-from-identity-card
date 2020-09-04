@@ -1,0 +1,19 @@
+item {
+  id: 1
+  name: 'top_left'
+}
+
+item {
+  id: 2
+  name: 'top_right'
+}
+
+item {
+  id: 3
+  name: 'bottom_right'
+}
+
+item {
+  id: 4
+  name: 'bottom_left'
+}
