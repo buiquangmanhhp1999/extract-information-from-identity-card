@@ -8,12 +8,12 @@ import numpy as np
 
 class CompletedModel(object):
     def __init__(self):
-        self.corner_detection_model = Detector(path_to_model='./config_corner_detection/model.tflite',
+        self.corner_detection_model = Detector(path_to_model='./config_corner_detection/Corner/model.tflite',
                                                path_to_labels='./config_corner_detection/label_map.pbtxt',
                                                nms_threshold=0.2, score_threshold=0.3)
-        self.text_detection_model = Detector(path_to_model='./config_text_detection/model.tflite',
+        self.text_detection_model = Detector(path_to_model='./config_text_detection/Text/model.tflite',
                                              path_to_labels='./config_text_detection/label_map.pbtxt',
-                                             nms_threshold=0.2, score_threshold=0.3)
+                                             nms_threshold=0.2, score_threshold=0.2)
         self.text_recognition_model = TextRecognition(path_to_checkpoint='./config_text_recognition/transformerocr.pth')
 
         # init boxes
@@ -39,7 +39,7 @@ class CompletedModel(object):
 
         # align image
         cropped_img = align_image(image, coordinate_dict)
-        # cv2.imwrite('./test.png', cropped_img)
+        cv2.imwrite('./test.png', cropped_img)
 
         return cropped_img
 
@@ -52,7 +52,6 @@ class CompletedModel(object):
 
     def text_recognition(self, image):
         field_dict = dict()
-        cropped_img = []
 
         # crop boxes according to coordinate
         def crop_and_recog(boxes):
@@ -63,6 +62,7 @@ class CompletedModel(object):
             else:
                 for box in boxes:
                     ymin, xmin, ymax, xmax = box
+                    # cv2.imwrite('./crop/test_' + str(ymin) + '_' + str(ymax) + '.png', image[ymin:ymax, xmin:xmax])
                     crop.append(image[ymin:ymax, xmin:xmax])
 
             return crop
@@ -72,28 +72,27 @@ class CompletedModel(object):
         list_ans.extend(crop_and_recog(self.birth_boxes))
         list_ans.extend(crop_and_recog(self.add_boxes))
         list_ans.extend(crop_and_recog(self.home_boxes))
-        print(len(list_ans))
-        result = self.text_recognition_model.predict_on_batch(np.array(list_ans))
 
-        print(result)
-        # field_dict['id'] = crop_and_recog(self.id_boxes)
-        # field_dict['name'] = crop_and_recog(self.name_boxes)
-        # field_dict['birth'] = crop_and_recog(self.birth_boxes)
-        # field_dict['add'] = crop_and_recog(self.add_boxes)
-        # field_dict['home'] = crop_and_recog(self.home_boxes)
-        # print(field_dict)
+        start1 = time.time()
+        result = self.text_recognition_model.predict_on_batch(np.array(list_ans))
+        end1 = time.time()
+        print("predicted time: ", end1 - start1)
+        field_dict['id'] = result[0]
+        field_dict['name'] = ' '.join(result[1:len(self.name_boxes) + 1])
+        field_dict['birth'] = result[len(self.name_boxes) + 1]
+        field_dict['home'] = ' '.join(result[len(self.name_boxes) + 2: -len(self.home_boxes)])
+        field_dict['add'] = ' '.join(result[-len(self.home_boxes):])
+        print(field_dict)
 
     def predict(self, image):
         cropped_image = self.detect_corner(image)
-
         self.detect_text(cropped_image)
-        start = time.time()
-
         self.text_recognition(cropped_image)
-        end = time.time()
-
-        print("Required time: ", end - start)
 
 
-img = cv2.imread('./test_image/test_5.jpg')
-model = CompletedModel().predict(img)
+img = cv2.imread('./test_image/test.jpeg')
+model = CompletedModel()
+start = time.time()
+model.predict(img)
+end = time.time()
+print("Required time: ", end - start)
