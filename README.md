@@ -23,6 +23,11 @@ Results:
 </p>
 
 ## 3. OCR by Transformer OCR
+Run above command to run server
+```
+python manage.py runserver 8080
+```
+
 **Final Result**
 ```
 {
