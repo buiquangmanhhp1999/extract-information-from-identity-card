@@ -33,7 +33,7 @@ Results:
 Run above command to run server
 ```
 cd complete
-python manage.py runserver 8080
+python s
 ```
 
 **Final Result**
