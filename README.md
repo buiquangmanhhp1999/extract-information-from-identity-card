@@ -33,7 +33,7 @@ Results:
 Run above command to run server
 ```
 cd complete
-python s
+python server.py
 ```
 
 **Final Result**
