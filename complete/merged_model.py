@@ -1,5 +1,5 @@
-from SSDCaffe.complete.detector import Detector
-from SSDCaffe.complete.recognition import TextRecognition
+from complete.detector import Detector
+from complete.recognition import TextRecognition
 from utils.image_utils import align_image, sort_text
 import cv2
 import time
