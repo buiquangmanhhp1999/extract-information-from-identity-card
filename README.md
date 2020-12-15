@@ -31,7 +31,7 @@ Results:
 ## 3. End to end model (corner detection, text detection, ocr)
 Run above command to run server
 ```
-c
+cd complete
 python manage.py runserver 8080
 ```
 
