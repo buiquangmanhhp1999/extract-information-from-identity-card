@@ -2,7 +2,7 @@ from PIL import Image
 import os
 import gdown
 import yaml
-from SSDCaffe.complete.predictor import Predictor
+from complete.predictor import Predictor
 
 
 class TextRecognition(object):
