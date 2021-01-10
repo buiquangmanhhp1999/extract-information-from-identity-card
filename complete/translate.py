@@ -3,10 +3,9 @@ import numpy as np
 from PIL import Image
 from torch.nn.functional import log_softmax
 import cv2
-from model.vocab import Vocab
-from model.beam import Beam
-import parameters as cfg
-from OCR import OCR
+from vietocr.model.transformerocr import VietOCR
+from vietocr.model.vocab import Vocab
+from vietocr.model.beam import Beam
 
 
 def batch_translate_beam_search(img, model, beam_size=4, candidates=1, max_seq_length=128, sos_token=1, eos_token=2):
@@ -109,45 +108,44 @@ def translate(img, model, max_seq_length=128, sos_token=1, eos_token=2):
 def build_model(config):
     vocab = Vocab(config['vocab'])
     device = config['device']
-
-    model = OCR(len(vocab),
-                config['seq2seq']['encoder_hidden'],
-                config['seq2seq']['decoder_hidden'],
-                config['seq2seq']['img_channel'],
-                config['seq2seq']['decoder_embedded'],
-                config['seq2seq']['dropout'])
+    
+    model = VietOCR(len(vocab),
+            config['backbone'],
+            config['cnn'], 
+            config['transformer'],
+            config['seq_modeling'])
+    
     model = model.to(device)
 
     return model, vocab
 
 
-def process_image(image):
-    # convert to numpy array
-    img = np.asarray(image)
-    h, w = img.shape[:2]
+def resize(w, h, expected_height, image_min_width, image_max_width):
+    new_w = int(expected_height * float(w) / float(h))
+    round_to = 10
+    new_w = math.ceil(new_w/round_to)*round_to
+    new_w = max(new_w, image_min_width)
+    new_w = min(new_w, image_max_width)
 
-    # padding image:
-    padding_right = cfg.width_img - w
-    img = cv2.resize(img, (w, cfg.height_img), cv2.INTER_AREA)
+    return new_w, expected_height
 
-    if padding_right >= 0:
-        img = cv2.resize(img, (w, cfg.height_img), cv2.INTER_AREA)
-        img = cv2.copyMakeBorder(img, top=0, left=0, right=padding_right, bottom=0, borderType=cv2.BORDER_CONSTANT, value=0)
-    elif padding_right < 0:
-        img = cv2.resize(img, (cfg.width_img, cfg.height_img), cv2.INTER_AREA)
+def process_image(image, image_height, image_min_width, image_max_width):
+    img = image.convert('RGB')
 
-    img = img.transpose(2, 0, 1)
-    img = img / 255.0
+    w, h = img.size
+    new_w, image_height = resize(w, h, image_height, image_min_width, image_max_width)
 
+    img = img.resize((new_w, image_height), Image.ANTIALIAS)
+
+    img = np.asarray(img).transpose(2,0, 1)
+    img = img/255
     return img
 
-
-def process_input(image):
-    img = process_image(image)
+def process_input(image, image_height, image_min_width, image_max_width):
+    img = process_image(image, image_height, image_min_width, image_max_width)
     img = img[np.newaxis, ...]
     img = torch.FloatTensor(img)
     return img
-
 
 def predict(filename, config):
     img = Image.open(filename)
@@ -158,5 +156,5 @@ def predict(filename, config):
     model, vocab = build_model(config)
     s = translate(img, model)[0].tolist()
     s = vocab.decode(s)
-
+    
     return s
