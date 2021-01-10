@@ -1,4 +1,4 @@
-from vietocr.tool.translate import build_model, translate, translate_beam_search, batch_translate_beam_search
+from translate import build_model, translate, translate_beam_search, batch_translate_beam_search
 import cv2
 import numpy as np
 import math
