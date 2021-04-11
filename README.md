@@ -30,6 +30,8 @@ Results:
 </p>
 
 ## 3. End to end model (corner detection, text detection, ocr)
+Download weight from https://drive.google.com/file/d/1pXftFiTGzcXNqsy6jKxQF2WyiOoBmDKU/view?usp=sharing, then put into config_text_recognition folder.
+
 Run above command to run server
 ```
 cd complete
