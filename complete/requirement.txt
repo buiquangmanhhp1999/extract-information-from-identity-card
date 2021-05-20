@@ -4,3 +4,6 @@ tensorflow==2.2.0
 matplotlib
 torchvision
 vietocr==0.3.2
+PyYAML
+uvicorn
+fastapi
