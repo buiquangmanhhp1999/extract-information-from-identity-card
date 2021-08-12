@@ -1,20 +1,21 @@
-from complete.detector import Detector
-from complete.recognition import TextRecognition
+from detector import Detector
+from recognition import TextRecognition
 from utils.image_utils import align_image, sort_text
 import cv2
 import time
 import numpy as np
+from copy import deepcopy as dc
 
 
 class CompletedModel(object):
     def __init__(self):
-        self.corner_detection_model = Detector(path_to_model='./config_corner_detection/Corner/model.tflite',
-                                               path_to_labels='./config_corner_detection/label_map.pbtxt',
+        self.corner_detection_model = Detector(path_to_model='[root]/extract-information-from-identity-card/complete/config_corner_detection/model.tflite',
+                                               path_to_labels='[root]/extract-information-from-identity-card/complete/config_corner_detection/label_map.pbtxt',
                                                nms_threshold=0.2, score_threshold=0.3)
-        self.text_detection_model = Detector(path_to_model='./config_text_detection/Text/model.tflite',
-                                             path_to_labels='./config_text_detection/label_map.pbtxt',
+        self.text_detection_model = Detector(path_to_model='[root]/extract-information-from-identity-card/complete/config_text_detection/model.tflite',
+                                             path_to_labels='[root]/extract-information-from-identity-card/complete/config_text_detection/label_map.pbtxt',
                                              nms_threshold=0.2, score_threshold=0.2)
-        self.text_recognition_model = TextRecognition(path_to_checkpoint='./config_text_recognition/transformerocr.pth')
+        self.text_recognition_model = TextRecognition(path_to_checkpoint='[root]/transformerocr.pth') #download link: https://drive.google.com/file/d/1B7b52G0hL6SKpsxP70xfyKhaRPaoWTuJ/view?usp=sharing
 
         # init boxes
         self.id_boxes = None
@@ -39,7 +40,7 @@ class CompletedModel(object):
 
         # align image
         cropped_img = align_image(image, coordinate_dict)
-        cv2.imwrite('./test.png', cropped_img)
+        # cv2.imwrite('./test.png', cropped_img)
 
         return cropped_img
 
@@ -49,6 +50,8 @@ class CompletedModel(object):
 
         # sort text boxes according to coordinate
         self.id_boxes, self.name_boxes, self.birth_boxes, self.home_boxes, self.add_boxes = sort_text(detection_boxes, detection_classes)
+
+        return self.text_detection_model.draw(image)
 
     def text_recognition(self, image):
         field_dict = dict()
@@ -82,17 +85,19 @@ class CompletedModel(object):
         field_dict['birth'] = result[len(self.name_boxes) + 1]
         field_dict['home'] = ' '.join(result[len(self.name_boxes) + 2: -len(self.home_boxes)])
         field_dict['add'] = ' '.join(result[-len(self.home_boxes):])
-        print(field_dict)
+        return field_dict
 
     def predict(self, image):
         cropped_image = self.detect_corner(image)
-        self.detect_text(cropped_image)
-        self.text_recognition(cropped_image)
+        cropped_image_cp = dc(cropped_image)
+        text_image = self.detect_text(cropped_image)
+        return cropped_image_cp, text_image, self.text_recognition(cropped_image)
 
 
-img = cv2.imread('./test_image/test.jpeg')
-model = CompletedModel()
-start = time.time()
-model.predict(img)
-end = time.time()
-print("Required time: ", end - start)
+if "__name__" == "__main__":
+    model = CompletedModel()
+    """
+    image = request.args['image_url']
+    """
+    np_image = np.array(image)
+    _, _, text = model.predict(np_image)
