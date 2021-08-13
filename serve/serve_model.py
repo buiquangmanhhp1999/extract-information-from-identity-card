@@ -7,10 +7,7 @@ model = None
 
 
 def load_model():
-    print("Model loading.....")
     model = CompletedModel()
-    print("Model loaded")
-
     return model
 
 
@@ -21,7 +18,6 @@ def predict(image: Image.Image):
 
     img = np.asarray(image)
     result = model.predict(img)
-    print(result)
 
     return result
 
