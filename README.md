@@ -14,12 +14,6 @@ Tutorial: [Recognize Identity Card Tutorial](https://viblo.asia/p/trich-xuat-tho
 </p>
 
 ### 1.3. Recognize image text and final results
-
-Run above command to run server
-```
-python server.py
-```
-
 **Final Result**
 ```
 {
