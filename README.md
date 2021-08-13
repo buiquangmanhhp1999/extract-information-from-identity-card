@@ -38,7 +38,8 @@ python server.py
 pip install -r requirement.txt
 ```
 ### 2.2. Download weight from gg drive
-<p> Download weight from https://drive.google.com/file/d/1pXftFiTGzcXNqsy6jKxQF2WyiOoBmDKU/view?usp=sharing, then put into src/vietocr/config_text_recognition folder. </p>
+
+Download weight from [here](https://drive.google.com/file/d/1pXftFiTGzcXNqsy6jKxQF2WyiOoBmDKU/view?usp=sharing) , then put into src/vietocr/config_text_recognition folder.
 
 ### 2.3. Start server
 ```
