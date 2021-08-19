@@ -1,5 +1,6 @@
 from io import BytesIO
 import numpy as np
+import requests
 from PIL import Image
 from merged_model import CompletedModel
 
@@ -27,6 +28,9 @@ def predict(image: Image.Image):
 
 
 def read_image_file(file) -> Image.Image:
-    image = Image.open(BytesIO(file))
-
+    try:
+        response = requests.get(file)
+        image = Image.open(BytesIO(response.content))
+    except:
+        image = Image.open(BytesIO(file))
     return image
