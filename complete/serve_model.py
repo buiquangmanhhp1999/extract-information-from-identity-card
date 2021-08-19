@@ -20,7 +20,7 @@ def predict(image: Image.Image):
         model = load_model()
 
     img = np.asarray(image)
-    result = model.predict(img)
+    _, _, result = model.predict(img)
     print(result)
 
     return result
