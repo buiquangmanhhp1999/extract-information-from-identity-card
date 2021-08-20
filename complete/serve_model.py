@@ -28,8 +28,5 @@ def predict(image: Image.Image):
 
 
 def read_image_file(file) -> Image.Image:
-    if 'http' in file:
-        image = imread(file)
-    else:
-        image = Image.open(BytesIO(file))
+    image = imread(file)
     return image
