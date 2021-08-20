@@ -1,6 +1,6 @@
 from io import BytesIO
 import numpy as np
-import requests
+from imageio import imread
 from PIL import Image
 from merged_model import CompletedModel
 
@@ -28,9 +28,8 @@ def predict(image: Image.Image):
 
 
 def read_image_file(file) -> Image.Image:
-    try:
-        response = requests.get(file)
-        image = Image.open(BytesIO(response.content))
-    except:
+    if 'http' in file:
+        image = imread(file)
+    else:
         image = Image.open(BytesIO(file))
     return image

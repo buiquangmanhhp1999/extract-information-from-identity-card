@@ -11,3 +11,4 @@ streamlit
 transformers
 chatterbot
 pyngrok
+imageio
