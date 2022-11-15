@@ -40,6 +40,9 @@ Download weight from [here](https://drive.google.com/file/d/1pXftFiTGzcXNqsy6jKx
 python main.py
 ```
 
+## Note
+Phiên bản này dành riêng cho cộng đồng. Mọi người nếu có mong muốn tìm giải pháp thương mại xin vui lòng liên hệ mình theo email buiquangmanhhp1999@gmai.c
+
 
 
 
